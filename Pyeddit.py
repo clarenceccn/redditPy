@@ -20,7 +20,6 @@ class RedditPrawler(object):
         self.displayFeed()
 
     def displayFeed(self):
-        print '\n'
         for post in self.feed:
             print ' '.join((str(post)[5:int(len(str(post)))]).split()) + '\n'
 
@@ -36,7 +35,8 @@ class RedditPrawler(object):
             i += 1
         input = raw_input()
         print "Okay going to " + self.favoriteSubReddits[int(input)]
-        self.getSubmissions(input, 10)
+        print "---------------------------------------------------"
+        self.getSubmissions(input, 20)
 
 
 pr = RedditPrawler()
