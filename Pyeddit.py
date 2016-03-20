@@ -21,11 +21,15 @@ class RedditPrawler(object):
 
     def displayFeed(self):
         for post in self.feed:
-            print ' '.join((str(post)[5:int(len(str(post)))]).split()) + '\n'
+            self.crop(post)
 
     def addSubReddit(self, subreddit):
         self.favoriteSubReddits.append(subreddit)
         print "Successfully added : " + subreddit
+
+    def crop(self, post):
+        cropIndex = str(post).index(':') + 3
+        print str(post)[cropIndex:int(len(str(post)))] + '\n'
 
     def main(self):
         print "Which subreddit would you like to go to?"
