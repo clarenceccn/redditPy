@@ -15,6 +15,8 @@ window = curses.initscr()
 window.hline(window.getmaxyx()[0] - 2, 0, '-', window.getmaxyx()[1] - 1)
 window.move(window.getbegyx()[0], window.getbegyx()[1])
 window.keypad(True)
+# window.attron(curses.A_REVERSE) #HIGHLIGHT MODE
+# window.attron(curses.A_STANDOUT) #HIGHLIGHTMODE too
 curses.noecho()
 curses.cbreak()
 input = 0
@@ -43,6 +45,15 @@ while (input != EXIT_CODE):  # Checks if input is q
         window.addch(':')
         curses.echo()
 
+    # MAKE SURE IT DOESNT GO OUT OF BOUNDS
+    if input == curses.KEY_RIGHT:
+        window.move(window.getyx()[0], window.getyx()[1] + 1)
+    if input == curses.KEY_LEFT:
+        window.move(window.getyx()[0], window.getyx()[1] - 1)
+    if input == curses.KEY_UP:
+        window.move(window.getyx()[0] - 1, window.getyx()[1])
+    if input == curses.KEY_DOWN:
+        window.move(window.getyx()[0] + 1, window.getyx()[1])
 # Terminate window
 window.clear()
 curses.nocbreak()

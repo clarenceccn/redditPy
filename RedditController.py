@@ -16,3 +16,5 @@ class RedditController(object):
             self.screen.commandWindow()
         if command == self.code.ENTER_CODE:
             self.screen.enter()
+        if command in self.code.MOVEMENT:
+            self.screen.move(command)
