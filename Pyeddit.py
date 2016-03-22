@@ -8,7 +8,8 @@ class RedditPrawler(object):
 
     def __init__(self):
         self.favoriteSubReddits = ["cscareerquestions",
-                                   "blackpeopletwitter", "DBZDokkanBattle"]
+                                   "blackpeopletwitter", "DBZDokkanBattle", "Funny", "AskReddit", "TIFU"]
+        self.favoriteSubReddits.sort()
         self.r = praw.Reddit(
             user_agent="testing_personal_reddit_crawler_donfistme")
         self.feed = []
@@ -43,5 +44,5 @@ class RedditPrawler(object):
         self.getSubmissions(input, 20)
 
 
-pr = RedditPrawler()
-pr.main()
+# pr = RedditPrawler()
+# pr.main()

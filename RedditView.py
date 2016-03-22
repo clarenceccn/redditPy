@@ -1,15 +1,19 @@
 import curses
+from keyCodes import *
+from RedditSubView import *
 
 
 class RedditView(object):
     """docstring for MainWindow"""
 
     def __init__(self):
+        self.code = KeyCodes()
         self.currentInput = 0
         self.tempCursorPos = 0
         self.window = curses.initscr()
+        # self.post =
         self.window.hline(self.window.getmaxyx()[0] - 2, 0,
-                          '-', self.window.getmaxyx()[1] - 1)
+                          curses.ACS_HLINE, self.window.getmaxyx()[1] - 1)
         self.window.move(self.window.getbegyx()[0], self.window.getbegyx()[1])
         self.window.keypad(True)
         curses.noecho()
@@ -22,6 +26,10 @@ class RedditView(object):
         curses.echo()
         curses.endwin()
         exit()
+
+    def loadSubReddits(self, feed):
+        self.sub = SubRedditView(self.window, feed)
+        self.sub.populate()
 
     def commandWindow(self):
         self.tempCursorPos = self.window.getyx()
@@ -36,17 +44,21 @@ class RedditView(object):
             self.window.move(self.tempCursorPos[0], self.tempCursorPos[1])
         self.window.move(self.window.getyx()[0] + 1, 0)
 
+    def setCurrentCursor(self):
+        self.window.chgat(self.window.getyx()[0], 0, curses.A_STANDOUT)
+
     def getInput(self):
         return self.window.getch()
 
     def move(self, direction):
-        if direction == curses.KEY_LEFT:
+        # print direction,
+        if direction == curses.KEY_LEFT or direction == self.code.MOVE_LEFT:
             self.moveLeft()
-        if direction == curses.KEY_RIGHT:
+        if direction == curses.KEY_RIGHT or direction == self.code.MOVE_RIGHT:
             self.moveRight()
-        if direction == curses.KEY_UP:
+        if direction == curses.KEY_UP or direction == self.code.MOVE_UP:
             self.moveUp()
-        if direction == curses.KEY_DOWN:
+        if direction == curses.KEY_DOWN or direction == self.code.MOVE_DOWN:
             self.moveDown()
 
     def moveLeft(self):
