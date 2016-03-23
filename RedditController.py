@@ -21,4 +21,3 @@ class RedditController(object):
             self.screen.enter()
         if command in self.code.MOVEMENT:
             self.screen.move(command)
-            self.screen.setCurrent

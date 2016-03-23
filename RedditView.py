@@ -1,6 +1,6 @@
 import curses
 from keyCodes import *
-from RedditSubView import *
+# from RedditSubView import *
 
 
 class RedditView(object):
@@ -16,8 +16,11 @@ class RedditView(object):
                           curses.ACS_HLINE, self.window.getmaxyx()[1] - 1)
         self.window.move(self.window.getbegyx()[0], self.window.getbegyx()[1])
         self.window.keypad(True)
+        self.window.attroff(curses.A_NORMAL)
+        curses.curs_set(0)
         curses.noecho()
         curses.cbreak()
+        curses.halfdelay(20)
 
     def terminateWindow(self):
         self.window.clear()
@@ -44,22 +47,14 @@ class RedditView(object):
             self.window.move(self.tempCursorPos[0], self.tempCursorPos[1])
         self.window.move(self.window.getyx()[0] + 1, 0)
 
-    def setCurrentCursor(self):
-        self.window.chgat(self.window.getyx()[0], 0, curses.A_STANDOUT)
-
     def getInput(self):
         return self.window.getch()
 
+    def update(self):
+        self.sub.update()
+
     def move(self, direction):
-        # print direction,
-        if direction == curses.KEY_LEFT or direction == self.code.MOVE_LEFT:
-            self.moveLeft()
-        if direction == curses.KEY_RIGHT or direction == self.code.MOVE_RIGHT:
-            self.moveRight()
-        if direction == curses.KEY_UP or direction == self.code.MOVE_UP:
-            self.moveUp()
-        if direction == curses.KEY_DOWN or direction == self.code.MOVE_DOWN:
-            self.moveDown()
+        self.sub.move(direction)
 
     def moveLeft(self):
         currentPosition = self.window.getyx()
@@ -92,3 +87,76 @@ class RedditView(object):
             return
 
         self.window.move(self.window.getyx()[0] + 1, self.window.getyx()[1])
+
+
+class SubRedditView(RedditView):
+    """docstring for SubRedditView"""
+
+    def __init__(self, win, feed):
+        self.code = KeyCodes()
+        self.dict = {'-1': 'SubReddits'}
+        self.submissions = feed
+        self.window = win
+        self.LEFT_BOUNDS = 0
+        self.RIGHT_BOUNDS = self.getRightBounds() + 2
+        self.TOP_BOUNDS = 0
+        self.BOTTOM_BOUNDS = self.window.getmaxyx()[0] - 2
+        self.BEGINNING = 2
+        self.size = len(feed)
+        self.window.vline(0, self.RIGHT_BOUNDS,
+                          curses.ACS_VLINE, self.BOTTOM_BOUNDS)
+
+    def populate(self):
+        self.window.addstr(0, 0, "SubReddits")
+        self.window.hline(1, 0, curses.ACS_HLINE, self.RIGHT_BOUNDS)
+        STARTING_POS = 2
+        for sub in self.submissions:
+            self.window.addstr(STARTING_POS, 0, sub)
+            self.dict[STARTING_POS] = sub
+            STARTING_POS += 1
+        self.window.move(self.BEGINNING, 0)
+        self.setCurrentCursor()
+
+    def getSubRedditAtIndex(self, index):
+        if index in self.dict:
+            return self.dict[index]
+        return 0
+
+    def setCurrentCursor(self):
+        sub = self.getSubRedditAtIndex(self.window.getyx()[0])
+        if sub == 0:
+            return
+        length = len(str(sub))
+        self.window.chgat(self.window.getyx()[0], 0, length, curses.A_STANDOUT)
+
+    def updateReset(self):
+        sub = self.getSubRedditAtIndex(self.window.getyx()[0])
+        if sub == 0:
+            return
+        length = len(str(sub))
+        self.window.chgat(self.window.getyx()[0], 0, length, curses.A_NORMAL)
+
+    def update(self):
+        self.setCurrentCursor()
+
+    # Move only up and down
+    def move(self, direction):
+        # if direction == curses.KEY_LEFT or direction == self.code.MOVE_LEFT:
+            # self.moveLeft()
+        # if direction == curses.KEY_RIGHT or direction == self.code.MOVE_RIGHT:
+            # self.moveRight()
+        if direction == curses.KEY_UP or direction == self.code.MOVE_UP:
+            self.updateReset()
+            self.moveUp()
+            self.update()
+        if direction == curses.KEY_DOWN or direction == self.code.MOVE_DOWN:
+            self.updateReset()
+            self.moveDown()
+            self.update()
+
+    def getRightBounds(self):
+        limit = 0
+        for sub in self.submissions:
+            if len(sub) > limit:
+                limit = len(sub)
+        return limit

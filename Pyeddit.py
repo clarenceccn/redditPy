@@ -10,8 +10,8 @@ class RedditPrawler(object):
         self.favoriteSubReddits = ["cscareerquestions",
                                    "blackpeopletwitter", "DBZDokkanBattle", "Funny", "AskReddit", "TIFU"]
         self.favoriteSubReddits.sort()
-        self.r = praw.Reddit(
-            user_agent="testing_personal_reddit_crawler_donfistme")
+        # self.r = praw.Reddit(
+        # user_agent="testing_personal_reddit_crawler_donfistme")
         self.feed = []
 
     # Gets and sets feed and displays
