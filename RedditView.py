@@ -2,7 +2,54 @@ import curses
 from keyCodes import *
 
 
-# This class defines the main terminal screen
+# Defines the interface of which all the views should inherit from
+class ViewInterface(object):
+    """docstring for ViewInterface"""
+
+    def __init__(self):
+        self.create = True
+
+    ###########################################################################
+    ##### Methods to control cursor direction using h,j,k,l or arrow keys #####
+    ###########################################################################
+    def moveLeft(self):
+        currentPosition = self.window.getyx()
+        LEFT_BOUNDS = 0
+        if currentPosition[1] == LEFT_BOUNDS:
+            return
+
+        self.window.move(self.window.getyx()[0], self.window.getyx()[1] - 1)
+
+    def moveRight(self):
+        currentPosition = self.window.getyx()
+        RIGHT_BOUNDS = self.window.getmaxyx()[1]
+        if currentPosition[1] == RIGHT_BOUNDS:
+            return
+
+        self.window.move(self.window.getyx()[0], self.window.getyx()[1] + 1)
+
+    def moveUp(self):
+        currentPosition = self.window.getyx()
+        UPPER_BOUNDS = 0
+        if currentPosition[0] == UPPER_BOUNDS:
+            return
+
+        self.window.move(self.window.getyx()[0] - 1, self.window.getyx()[1])
+
+    def moveDown(self):
+        currentPosition = self.window.getyx()
+        BOTTOM_BOUNDS = self.window.getmaxyx()[0] - 3
+        if currentPosition[0] == BOTTOM_BOUNDS:
+            return
+
+        self.window.move(self.window.getyx()[0] + 1, self.window.getyx()[1])
+    ##########################################################################
+    ##########################################################################
+
+############################## END OF CLASS ###################################
+
+
+# This class defines the main terminal screen that initializes all views
 class RedditView(object):
     """docstring for MainWindow"""
 
@@ -61,50 +108,17 @@ class RedditView(object):
         self.sub.update()
 
     # Method to move cursor on screen
+    # TODO: check where cursor is so it calls the correct move on the certain
+    # view
     def move(self, direction):
         self.sub.move(direction)
 
-    ###########################################################################
-    ##### Methods to control cursor direction using h,j,k,l or arrow keys #####
-    ###########################################################################
-    def moveLeft(self):
-        currentPosition = self.window.getyx()
-        LEFT_BOUNDS = 0
-        if currentPosition[1] == LEFT_BOUNDS:
-            return
-
-        self.window.move(self.window.getyx()[0], self.window.getyx()[1] - 1)
-
-    def moveRight(self):
-        currentPosition = self.window.getyx()
-        RIGHT_BOUNDS = self.window.getmaxyx()[1]
-        if currentPosition[1] == RIGHT_BOUNDS:
-            return
-
-        self.window.move(self.window.getyx()[0], self.window.getyx()[1] + 1)
-
-    def moveUp(self):
-        currentPosition = self.window.getyx()
-        UPPER_BOUNDS = 0
-        if currentPosition[0] == UPPER_BOUNDS:
-            return
-
-        self.window.move(self.window.getyx()[0] - 1, self.window.getyx()[1])
-
-    def moveDown(self):
-        currentPosition = self.window.getyx()
-        BOTTOM_BOUNDS = self.window.getmaxyx()[0] - 3
-        if currentPosition[0] == BOTTOM_BOUNDS:
-            return
-
-        self.window.move(self.window.getyx()[0] + 1, self.window.getyx()[1])
-    ##########################################################################
-    ##########################################################################
+############################## END OF CLASS ###################################
 
 
 # This defines the left sidebar view of subreddits which is inside the Main
 # Window
-class SubRedditView(RedditView):
+class SubRedditView(ViewInterface):
     """docstring for SubRedditView"""
 
     # Initialize left sidebar with vertical/horizontal lines, header
@@ -185,3 +199,32 @@ class SubRedditView(RedditView):
             if len(sub) > limit:
                 limit = len(sub)
         return limit
+
+
+############################## END OF CLASS ###################################
+
+
+# TODO: Create the middle view with bounds that shows all the posts in a
+# subreddit
+class PostView(RedditView):
+    """docstring for PostView"""
+
+    def __init__(self, arg):
+        super(PostView, self).__init__()
+        self.arg = arg
+
+
+############################## END OF CLASS ###################################
+
+
+# TODO: Create the further right view that shows the post, and all the comments
+# in that post
+class DetailView(RedditView):
+    """docstring for DetailView"""
+
+    def __init__(self, arg):
+        super(DetailView, self).__init__()
+        self.arg = arg
+
+
+############################## END OF CLASS ###################################
