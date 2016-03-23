@@ -1,3 +1,3 @@
-Running the Application: 
-1) chmod u+x ./run
-2) ./run
+Running the Application: <br />
+1) chmod u+x ./run <br />
+2) ./run <br / >
