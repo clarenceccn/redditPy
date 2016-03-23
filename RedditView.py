@@ -1,11 +1,12 @@
 import curses
 from keyCodes import *
-# from RedditSubView import *
 
 
+# This class defines the main terminal screen
 class RedditView(object):
     """docstring for MainWindow"""
 
+    # Initialize main terminal window
     def __init__(self):
         self.code = KeyCodes()
         self.currentInput = 0
@@ -22,6 +23,7 @@ class RedditView(object):
         curses.cbreak()
         curses.halfdelay(20)
 
+    # Method to destroy main window
     def terminateWindow(self):
         self.window.clear()
         curses.nocbreak()
@@ -30,16 +32,19 @@ class RedditView(object):
         curses.endwin()
         exit()
 
+    # Method to create the left subreddit bar view
     def loadSubReddits(self, feed):
         self.sub = SubRedditView(self.window, feed)
         self.sub.populate()
 
+    # Method to go to command mode
     def commandWindow(self):
         self.tempCursorPos = self.window.getyx()
         self.window.move(self.window.getmaxyx()[0] - 1, 0)
         self.window.addch(':')
         curses.echo()
 
+    # Method to choose how enter key works
     def enter(self):
         if self.window.getyx()[0] == self.window.getmaxyx()[0] - 1:
             self.window.move(self.window.getyx()[0], 0)
@@ -47,15 +52,21 @@ class RedditView(object):
             self.window.move(self.tempCursorPos[0], self.tempCursorPos[1])
         self.window.move(self.window.getyx()[0] + 1, 0)
 
+    # Method to get input from keyboard
     def getInput(self):
         return self.window.getch()
 
+    # Method to update left sidebar current highlight
     def update(self):
         self.sub.update()
 
+    # Method to move cursor on screen
     def move(self, direction):
         self.sub.move(direction)
 
+    ###########################################################################
+    ##### Methods to control cursor direction using h,j,k,l or arrow keys #####
+    ###########################################################################
     def moveLeft(self):
         currentPosition = self.window.getyx()
         LEFT_BOUNDS = 0
@@ -87,11 +98,16 @@ class RedditView(object):
             return
 
         self.window.move(self.window.getyx()[0] + 1, self.window.getyx()[1])
+    ##########################################################################
+    ##########################################################################
 
 
+# This defines the left sidebar view of subreddits which is inside the Main
+# Window
 class SubRedditView(RedditView):
     """docstring for SubRedditView"""
 
+    # Initialize left sidebar with vertical/horizontal lines, header
     def __init__(self, win, feed):
         self.code = KeyCodes()
         self.dict = {'-1': 'SubReddits'}
@@ -106,6 +122,7 @@ class SubRedditView(RedditView):
         self.window.vline(0, self.RIGHT_BOUNDS,
                           curses.ACS_VLINE, self.BOTTOM_BOUNDS)
 
+    # Populates left sidebar with subreddit lists from the reddit bot
     def populate(self):
         self.window.addstr(0, 0, "SubReddits")
         self.window.hline(1, 0, curses.ACS_HLINE, self.RIGHT_BOUNDS)
@@ -117,11 +134,14 @@ class SubRedditView(RedditView):
         self.window.move(self.BEGINNING, 0)
         self.setCurrentCursor()
 
+    # Helper method to get the subreddit from the indexing system
+    # This is used as a means of highlighting current subreddit cursor position
     def getSubRedditAtIndex(self, index):
         if index in self.dict:
             return self.dict[index]
         return 0
 
+    # Sets the subreddit to be highlighted when cursor is at its location
     def setCurrentCursor(self):
         sub = self.getSubRedditAtIndex(self.window.getyx()[0])
         if sub == 0:
@@ -129,6 +149,8 @@ class SubRedditView(RedditView):
         length = len(str(sub))
         self.window.chgat(self.window.getyx()[0], 0, length, curses.A_STANDOUT)
 
+    # This method resets the previous highlighted subreddit so the new cursor
+    # position can highlight its current location
     def updateReset(self):
         sub = self.getSubRedditAtIndex(self.window.getyx()[0])
         if sub == 0:
@@ -136,10 +158,12 @@ class SubRedditView(RedditView):
         length = len(str(sub))
         self.window.chgat(self.window.getyx()[0], 0, length, curses.A_NORMAL)
 
+    # This method updates current cursor location
     def update(self):
         self.setCurrentCursor()
 
     # Move only up and down
+    # TODO: Implement right arrow key to move to post view (middle screen)
     def move(self, direction):
         # if direction == curses.KEY_LEFT or direction == self.code.MOVE_LEFT:
             # self.moveLeft()
@@ -154,6 +178,7 @@ class SubRedditView(RedditView):
             self.moveDown()
             self.update()
 
+    # This defines the right boundaries of the left sidebar view
     def getRightBounds(self):
         limit = 0
         for sub in self.submissions:
