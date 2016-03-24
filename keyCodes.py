@@ -14,6 +14,7 @@ class KeyCodes(object):
         self.create = True
 
 
+# TODO: Refactor all boundary settings in here
 class Settings(object):
     """docstring for Settings"""
 

@@ -1,6 +1,5 @@
 import curses
 from RedditView import *
-# import RedditPrawler
 from RedditController import *
 from Pyeddit import *
 
@@ -12,7 +11,6 @@ class RedditMain(object):
         self.bot = RedditPrawler()
         self.view = RedditView()
         self.controller = RedditController(self.view, self.bot)
-        # self.bot = RedditPrawler()
 
     def begin(self):
         while (1):
